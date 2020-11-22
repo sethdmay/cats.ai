@@ -2,7 +2,7 @@ import os
 import numpy as np
 from PIL import Image
 
-num_joints = 8
+num_angles = 8
 num_vectors = 12
 
 # TODO Use Numpy for this!
@@ -13,8 +13,7 @@ num_vectors = 12
 # Outputs numpy array of these angles [rightShoulder, rightElbow, rightHip, rightKnee,leftShoulder, leftElbow, leftHip,
 # leftKnee]
 def getAngles(open_pose_array):
-    open_pose_array = open_pose_array[0]
-    angles = np.zeros(num_joints) # [rightShoulder, rightElbow, rightHip, rightKnee,
+    angles = np.zeros(num_angles) # [rightShoulder, rightElbow, rightHip, rightKnee,
     # leftShoulder, leftElbow, leftHip, leftKnee]
     vectors = np.zeros((num_vectors, 2)) # [rightShoulderBlade, rightUpperArm, rightForearm, rightPelvis, rightUpperLeg,
     # rightLowerLeg, leftShoulderBlade, leftUpperArm, leftForearm, leftPelvis, leftUpperLeg, leftLowerLeg]
@@ -62,29 +61,36 @@ def getAngle(vec1, vec2):
 # averages down the columns.
 def averageAngles(angles_list):
     if len(angles_list) == 0:
-        return np.array()
+        return np.array([])
 
-    averages = [0] * len(angles_list[0])
+    averages = np.sum(angles_list, axis=0)
+    return averages / len(angles_list)
 
-    return averages
 
-#convert to numpy arrays
-def groupOpenPoseArrays(open_pose_arrays, shot_successes):
-    successful_array = []
-    miss_array = []
 
-    for it in range(len(open_pose_arrays)):
+def groupAngleArrays(angle_arrays, shot_successes):
+    successful_array = np.array([])
+    miss_array = np.array([])
+    for it in range(len(angle_arrays)):
         if shot_successes[it]:
-            successful_array.append(open_pose_arrays[it])
+            successful_array = np.append(successful_array, angle_arrays[it])
         else:
-            miss_array.append(open_pose_arrays[it])
+            miss_array = np.append(miss_array, angle_arrays[it])
 
-    return successful_array, miss_array
+    return np.reshape(successful_array, (-1, num_angles)), np.reshape(miss_array, (-1, num_angles))
+
+def processAllOpenPoses(open_pose_array):
+    angles = np.zeros((len(open_pose_array), num_angles))
+
+    for i in range(len(open_pose_array)):
+        angles[i] = getAngles(open_pose_array[i])
+
+    return angles
 
 #just to make sure I don't mess up the above function, I will make a duplicate version here
 #groupOpenPoseArrays convverted to numpy version
 
-def groupOpenPoseArrays2(open_pose_arrays, shot_successes):
+
 	
 
 
@@ -92,7 +98,7 @@ def groupOpenPoseArrays2(open_pose_arrays, shot_successes):
 def inputShotSuccess():
     directory_in_str = 'input'
     directory = os.fsencode(directory_in_str)
-    shot_successes = []
+    shot_successes = np.array([])
 
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
@@ -102,13 +108,23 @@ def inputShotSuccess():
             im.show()
             successful_shot = input()
             if successful_shot == 'y' or successful_shot == "Y":
-                shot_successes.append(True)
+                shot_successes = np.append(shot_successes, True)
             else:
-                shot_successes.append(False)
+                shot_successes = np.append(shot_successes, False)
         else:
             continue
 
     return shot_successes
+
+# Takes in OpenPose positions, reads user input for each shot
+# Returns average angle of each joint for successful shots and average angle of each joint for missed shots
+def analyzeOpenPoses(open_pose_array):
+    angles = processAllOpenPoses(open_pose_array)
+    shot_successes = inputShotSuccess()
+    print(shot_successes)
+    successful_angles, miss_angles = groupAngleArrays(angles, shot_successes)
+    return averageAngles(successful_angles), averageAngles(miss_angles)
+
 
 #print(inputShotSuccess())
 '''a = [[1,2,3],[4,5,6]]
@@ -124,20 +140,11 @@ print(successful_array == c)
 a = [0] * 5
 b = [1,2,3,4,5]
 a += b
-<<<<<<< HEAD
-print(a)
+
+print(a) '''
 
 
-#originally start with a numpy array
- 
-#make an empty numpy array
-#make an empty list
-#np.array([])
-#append to that later 
 
-
-# Outputs list of these angles [leftShoulder, rightShoulder, leftElbow, rightElbow, leftKnee, rightKnee, leftHip,
-# rightHip]
 ex_input = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9], [9, 8, 7, 6, 5, 4, 3, 2, 1]])
 
 def average_angles(angles_array):
@@ -159,15 +166,9 @@ print(average_angles(ex_input))
 
 
 
-#report 
 
-#3 functions
-#write a function that converts lists to numpy arrays
-#converting two points to a vector #david done
-#angle between two vectors 
-#done-> average angles function -> return list of average angles (2d array -> going down one column -> all of the angles for one body part)
-=======
 print(a)'''
+
 test1 = np.array([[[6.29239807e+02, 5.98466919e+02, 9.56953824e-01],
   [6.04586975e+02, 6.66049622e+02, 7.69139051e-01],
   [6.04623962e+02, 6.69112122e+02, 8.71934175e-01],
@@ -194,5 +195,5 @@ test1 = np.array([[[6.29239807e+02, 5.98466919e+02, 9.56953824e-01],
   [0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
   [0.00000000e+00, 0.00000000e+00, 0.00000000e+00]]])
 
-print(getAngles(test1))
+print(analyzeOpenPoses(test1))
 

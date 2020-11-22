@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+!openpose/py_package/openpose/pyopenpose.cpython-37m-darwin.so
 
 # Distribution / packaging
 .Python
@@ -127,3 +128,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+
+openpose/models/cameraParameters/
+openpose/models/face/
+openpose/models/hand/
+openpose/model/getModels.bat
+openpose/model/getModels.sh

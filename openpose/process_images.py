@@ -22,6 +22,7 @@ try:
         else:
             # Change these variables to point to the correct folder (Release/x64 etc.)
             # sys.path.append('../../python')
+            print()
             sys.path.append(dir_path + '/py_package')
             # If you run `make install` (default path is `/usr/local/python` for Ubuntu), you can also access the OpenPose/python module from there. This will install OpenPose and the python library at your desired installation path. Ensure that this is in your python path in order to use it.
             # sys.path.append('/usr/local/python')
@@ -38,7 +39,7 @@ try:
 
     # Custom Params (refer to include/openpose/flags.hpp for more parameters)
     params = dict()
-    params["model_folder"] = "./models/"
+    params["model_folder"] = dir_path + "/models/"
 
     # Add others in path?
     # for i in range(0, len(args[1])):
@@ -62,7 +63,7 @@ try:
     opWrapper.start()
 
     # Read frames on directory
-    imagePaths = op.get_images_on_directory("./img_to_process/")
+    imagePaths = op.get_images_on_directory(dir_path + "/img_to_process/")
     start = time.time()
 
     # Process and display images
@@ -74,10 +75,11 @@ try:
 
         # datum.keypoints is the array of body points
         # This is where we'd do the magic
-
+        
         print("Body keypoints: \n" + str(datum.poseKeypoints))
         #print("This is the real file ********", datum.cvOutputData)
         orig_file_name = os.path.basename(imagePath)
+        print(orig_file_name)
         cv2.imwrite(f"out/{orig_file_name}_annotated.png", datum.cvOutputData)
 
         cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", datum.cvOutputData)

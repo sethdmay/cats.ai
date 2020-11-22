@@ -2,22 +2,67 @@ import os
 import numpy as np
 from PIL import Image
 
+num_joints = 8
+num_vectors = 12
+
 # TODO Use Numpy for this!
 
 # Given 2D positions of various body parts from an OpenPose array for a single image,
 # calculates angles of shoulders, elbows, knees, hips. Uses LShoulder, Neck, RShoulder, LElbow, RElbow, LWrist, RWrist,
 # LAnkle, RAnkle, LKnee, RKnee, LHip, MidHip, RHip to make these calculations
-# Outputs list of these angles [leftShoulder, rightShoulder, leftElbow, rightElbow, leftKnee, rightKnee, leftHip,
-# rightHip]
+# Outputs numpy array of these angles [rightShoulder, rightElbow, rightHip, rightKnee,leftShoulder, leftElbow, leftHip,
+# leftKnee]
 def getAngles(open_pose_array):
-    angles = []
+    open_pose_array = open_pose_array[0]
+    angles = np.zeros(num_joints) # [rightShoulder, rightElbow, rightHip, rightKnee,
+    # leftShoulder, leftElbow, leftHip, leftKnee]
+    vectors = np.zeros((num_vectors, 2)) # [rightShoulderBlade, rightUpperArm, rightForearm, rightPelvis, rightUpperLeg,
+    # rightLowerLeg, leftShoulderBlade, leftUpperArm, leftForearm, leftPelvis, leftUpperLeg, leftLowerLeg]
+
+    # Vector calculations
+    vectors[0] = getVector(open_pose_array[1], open_pose_array[2])  # right shoulder blade
+    vectors[1] = getVector(open_pose_array[2], open_pose_array[3])  # right upper arm
+    vectors[2] = getVector(open_pose_array[3], open_pose_array[4])  # right forearm
+    vectors[3] = getVector(open_pose_array[8], open_pose_array[9])  # right pelvis
+    vectors[4] = getVector(open_pose_array[9], open_pose_array[10])  # right upper le g
+    vectors[5] = getVector(open_pose_array[10], open_pose_array[11])  # right lower leg
+
+    vectors[6] = getVector(open_pose_array[1], open_pose_array[5])  # left shoulder blade
+    vectors[7] = getVector(open_pose_array[5], open_pose_array[6])  # left upper arm
+    vectors[8] = getVector(open_pose_array[6], open_pose_array[7]) # left forearm
+    vectors[9] = getVector(open_pose_array[8], open_pose_array[12])  # left pelvis
+    vectors[10] = getVector(open_pose_array[12], open_pose_array[13])  # left upper leg
+    vectors[11] = getVector(open_pose_array[13], open_pose_array[14])  # left lower leg
+
+    # Angle calculations
+    angles[0] = getAngle(vectors[0], vectors[1]) # right shoulder
+    angles[1] = getAngle(vectors[1], vectors[2])  # right elbow
+    angles[2] = getAngle(vectors[3], vectors[4])  # right hip
+    angles[3] = getAngle(vectors[4], vectors[5])  # right knee
+
+    angles[4] = getAngle(vectors[6], vectors[7])  # left shoulder
+    angles[5] = getAngle(vectors[7], vectors[8])  # left elbow
+    angles[6] = getAngle(vectors[9], vectors[10])  # left hip
+    angles[7] = getAngle(vectors[10], vectors[11])  # left knee
+
     return angles
+
+# Takes in 2 positions, returns numpy array representing vector of pos2 - pos1
+def getVector(pos1, pos2):
+    return np.array([pos2[0] - pos1[0], pos2[1] - pos1[1]])
+
+# Takes in 2 vectors, returns angle (in radians) between the vectors calculated using dot product
+def getAngle(vec1, vec2):
+    vec1 = vec1 / np.linalg.norm(vec1)
+    vec2 = vec2 / np.linalg.norm(vec2)
+    dot_product = np.dot(vec1, vec2)
+    return np.arccos(dot_product)
 
 # Given list of list of angles from getAngles, returns a list of the angles averaged by index. Essentially, we take
 # averages down the columns.
 def averageAngles(angles_list):
     if len(angles_list) == 0:
-        return []
+        return np.array()
 
     averages = [0] * len(angles_list[0])
 
@@ -75,10 +120,11 @@ successes = [True, True, False]
 
 successful_array, miss_array = groupOpenPoseArrays(c, successes)
 print(successful_array, miss_array)
-print(successful_array == c)'''
+print(successful_array == c)
 a = [0] * 5
 b = [1,2,3,4,5]
 a += b
+<<<<<<< HEAD
 print(a)
 
 
@@ -120,3 +166,33 @@ print(average_angles(ex_input))
 #converting two points to a vector #david done
 #angle between two vectors 
 #done-> average angles function -> return list of average angles (2d array -> going down one column -> all of the angles for one body part)
+=======
+print(a)'''
+test1 = np.array([[[6.29239807e+02, 5.98466919e+02, 9.56953824e-01],
+  [6.04586975e+02, 6.66049622e+02, 7.69139051e-01],
+  [6.04623962e+02, 6.69112122e+02, 8.71934175e-01],
+  [6.99743286e+02, 6.72054260e+02, 8.93443167e-01],
+  [6.99838318e+02, 6.01571228e+02, 8.86620343e-01],
+  [6.04589600e+02, 6.59911499e+02, 6.43684864e-01],
+  [6.99651367e+02, 6.72076294e+02, 3.68231565e-01],
+  [6.99725098e+02, 6.10784851e+02, 3.93413872e-01],
+  [5.70944214e+02, 8.62202942e+02, 7.07278371e-01],
+  [5.77091797e+02, 8.65277649e+02, 7.37012982e-01],
+  [6.16945312e+02, 1.01562201e+03, 8.89406562e-01],
+  [5.61683899e+02, 1.12003625e+03, 1.73740849e-01],
+  [5.58713684e+02, 8.59152039e+02, 5.61030149e-01],
+  [5.92374695e+02, 1.00947424e+03, 8.39329600e-01],
+  [5.37177185e+02, 1.11999854e+03, 5.32564163e-01],
+  [6.16826843e+02, 5.92390747e+02, 9.16968405e-01],
+  [6.26184082e+02, 5.86320312e+02, 1.52191162e-01],
+  [5.83258606e+02, 6.13854553e+02, 9.06941116e-01],
+  [0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
+  [0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
+  [0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
+  [5.28015564e+02, 1.12001575e+03, 2.93556333e-01],
+  [0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
+  [0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
+  [0.00000000e+00, 0.00000000e+00, 0.00000000e+00]]])
+
+print(getAngles(test1))
+

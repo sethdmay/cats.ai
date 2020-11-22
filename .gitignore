@@ -134,5 +134,8 @@ dmypy.json
 openpose/models/cameraParameters/
 openpose/models/face/
 openpose/models/hand/
-openpose/model/getModels.bat
-openpose/model/getModels.sh
+openpose/models/getModels.bat
+openpose/models/getModels.sh
+openpose/models/pose/body_25/pose_iter_584000.caffemodel
+
+

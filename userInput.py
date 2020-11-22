@@ -1,9 +1,11 @@
 import os
 import numpy as np
 from PIL import Image
+from openpose.process_images import get_keypoints
 
 num_angles = 8
 num_vectors = 12
+directory_in_str = './openpose/img_to_process'
 
 # TODO Use Numpy for this!
 
@@ -86,14 +88,14 @@ def processAllOpenPoses(open_pose_array):
     return angles
 
 def inputShotSuccess():
-    directory_in_str = 'input'
+    
     directory = os.fsencode(directory_in_str)
     shot_successes = np.array([])
 
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         file_path = os.path.join(directory_in_str, filename)
-        if file_path.endswith(".png"):
+        if file_path.lower().endswith((".png",".jpeg",".jpg")):
             im = Image.open(file_path)
             im.show()
             successful_shot = input()
@@ -108,11 +110,11 @@ def inputShotSuccess():
 
 # Takes in OpenPose positions, reads user input for each shot
 # Returns average angle of each joint for successful shots and average angle of each joint for missed shots
-def analyzeOpenPoses(open_pose_array):
+def analyzeOpenPoses(open_pose_array, shot_successes_array):
     angles = processAllOpenPoses(open_pose_array)
-    shot_successes = inputShotSuccess()
-    print(shot_successes)
-    successful_angles, miss_angles = groupAngleArrays(angles, shot_successes)
+    #shot_successes = inputShotSuccess()
+    print(shot_successes_array)
+    successful_angles, miss_angles = groupAngleArrays(angles, shot_successes_array)
     return averageAngles(successful_angles), averageAngles(miss_angles)
 
 #print(inputShotSuccess())
@@ -157,4 +159,7 @@ test1 = np.array([[[6.29239807e+02, 5.98466919e+02, 9.56953824e-01],
   [0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
   [0.00000000e+00, 0.00000000e+00, 0.00000000e+00]]])
 
-print(analyzeOpenPoses(test1))
+kps, success_array = get_keypoints(directory_in_str)
+print(kps)
+
+print(analyzeOpenPoses(kps, success_array))

@@ -25,7 +25,7 @@ def getAngles(open_pose_array):
     vectors[1] = getVector(open_pose_array[2], open_pose_array[3])  # right upper arm
     vectors[2] = getVector(open_pose_array[3], open_pose_array[4])  # right forearm
     vectors[3] = getVector(open_pose_array[8], open_pose_array[9])  # right pelvis
-    vectors[4] = getVector(open_pose_array[9], open_pose_array[10])  # right upper leg
+    vectors[4] = getVector(open_pose_array[9], open_pose_array[10])  # right upper le g
     vectors[5] = getVector(open_pose_array[10], open_pose_array[11])  # right lower leg
 
     vectors[6] = getVector(open_pose_array[1], open_pose_array[5])  # left shoulder blade
@@ -68,6 +68,8 @@ def averageAngles(angles_list):
     averages = np.sum(angles_list, axis=0)
     return averages / len(angles_list)
 
+
+
 def groupAngleArrays(angle_arrays, shot_successes):
     successful_array = np.array([])
     miss_array = np.array([])
@@ -87,6 +89,14 @@ def processAllOpenPoses(open_pose_array):
 
     return angles
 
+#just to make sure I don't mess up the above function, I will make a duplicate version here
+#groupOpenPoseArrays convverted to numpy version
+
+
+	
+
+
+	
 def inputShotSuccess():
     
     directory = os.fsencode(directory_in_str)
@@ -117,6 +127,7 @@ def analyzeOpenPoses(open_pose_array, shot_successes_array):
     successful_angles, miss_angles = groupAngleArrays(angles, shot_successes_array)
     return averageAngles(successful_angles), averageAngles(miss_angles)
 
+
 #print(inputShotSuccess())
 '''a = [[1,2,3],[4,5,6]]
 b = [[7,8,9],[10,11,12]]
@@ -131,6 +142,33 @@ print(successful_array == c)
 a = [0] * 5
 b = [1,2,3,4,5]
 a += b
+
+print(a) '''
+
+
+
+ex_input = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9], [9, 8, 7, 6, 5, 4, 3, 2, 1]])
+
+def average_angles(angles_array):
+	running_total = np.zeros(9)
+	curr_part = 0
+	for sub_list in angles_array:
+		for e in sub_list:
+			running_total[curr_part] += e
+			curr_part += 1
+		curr_part = 0
+
+	counter = 0
+	for e in running_total:
+		running_total[counter] = e/(len(angles_array))
+		counter+=1
+	return running_total
+#print(np.zeros(8))
+print(average_angles(ex_input))
+
+
+
+
 print(a)'''
 
 test1 = np.array([[[6.29239807e+02, 5.98466919e+02, 9.56953824e-01],

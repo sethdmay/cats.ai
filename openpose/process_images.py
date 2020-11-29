@@ -38,6 +38,8 @@ except ImportError as e:
     print('Error: OpenPose library could not be found. Did you enable `BUILD_PYTHON` in CMake and have this Python script in the right folder?')
     raise e
 
+
+
 def get_keypoints(image_dir):
 
     try:
@@ -74,7 +76,7 @@ def get_keypoints(image_dir):
         opWrapper.start()
 
         # Read frames on directory
-        imagePaths = op.get_images_on_directory(dir_path + "/img_to_process/")
+        imagePaths = op.get_images_on_directory(dir_path + image_dir)
         start = time.time()
 
         # keypoint array
@@ -120,3 +122,6 @@ def get_keypoints(image_dir):
     shot_successes = np.array(shot_successes)
 
     return keypoints, shot_successes
+
+
+get_keypoints('')

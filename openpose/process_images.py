@@ -76,7 +76,7 @@ def get_keypoints(image_dir):
         opWrapper.start()
 
         # Read frames on directory
-        imagePaths = op.get_images_on_directory(dir_path + image_dir)
+        imagePaths = op.get_images_on_directory(dir_path + '/../' + image_dir)
         start = time.time()
 
         # keypoint array
@@ -102,7 +102,7 @@ def get_keypoints(image_dir):
             #print("This is the real file ********", datum.cvOutputData)
             orig_file_name = os.path.basename(imagePath)
             print(orig_file_name)
-            cv2.imwrite(f"out/{orig_file_name}_annotated.png", datum.cvOutputData)
+            cv2.imwrite(f"{dir_path}/out/{orig_file_name}_annotated.png", datum.cvOutputData)
 
             cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", datum.cvOutputData)
             key = cv2.waitKey(0)

@@ -130,9 +130,9 @@ def outputAnalysis(successful_angles, miss_angles):
 
     while i < length:
         if successful_angles[i] < miss_angles[i]:
-            print("Bend your ", joints[i], "more")
+            print("Bend your ", joints[i], " more")
         else:
-            print("Bend your ", joints[i], "less")
+            print("Bend your ", joints[i], " less")
         i += 1
 
 
